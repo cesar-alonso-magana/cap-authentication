@@ -47,11 +47,24 @@ export class AuthenticationService {
         this.fcm.getToken().then(token=>{
             let _token_ = {token:token};
             const Values = Object.assign(newValues,_token_);
-            const db = this.angularFireDatabase.database.ref('Devices');
+            const db = this.angularFireDatabase.database.ref('Devices/'+Values.rol);
             db.push(Values);
+            const _db_ = this.angularFireDatabase.database.ref('Devices/All');
+            _db_.push(Values);
+            
         })
     }
 
+    RegisterSocialMediaMobile(credentials: SocialMediaInterface){
+        this.fcm.getToken().then(token=>{
+            let _token_ = {token:token};  
+            const newValues = Object.assign(credentials,_token_);
+            const db = this.angularFireDatabase.database.ref('Devices/'+newValues.rol);
+            db.push(newValues);
+            const _db_ = this.angularFireDatabase.database.ref('Devices/All');
+            _db_.push(newValues);
+        })
+    }
     RegisterBrowser(credentials: CredentialsInterface){
         const newValues = {
             username: credentials.username,
@@ -60,15 +73,6 @@ export class AuthenticationService {
         }
         const db = this.angularFireDatabase.database.ref('Browser');
             db.push(newValues);
-    }
-
-    RegisterSocialMediaMobile(credentials: SocialMediaInterface){
-        this.fcm.getToken().then(token=>{
-            let _token_ = {token:token};  
-            const newValues = Object.assign(credentials,_token_);
-            const db = this.angularFireDatabase.database.ref('Devices');
-            db.push(newValues);
-        })
     }
 
     RegisterSocialMediaBrowser(credentials: SocialMediaInterface){
