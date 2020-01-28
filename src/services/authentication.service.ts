@@ -1,6 +1,6 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Inject, PLATFORM_ID} from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { Observable } from 'rxjs';
-import { ConfigService } from './config.service';
 import * as firebase from 'firebase/app';
 import { AngularFireAuth } from '@angular/fire/auth';
 
@@ -9,7 +9,10 @@ export class AuthenticationService {
 
   private user: Observable<firebase.User | null>;
 
-  constructor(private afAuth: AngularFireAuth) {
+  constructor(
+    private afAuth: AngularFireAuth,
+    @Inject(PLATFORM_ID) private platformId,
+  ) {
     this.user = this.afAuth.authState;
   }
 
@@ -21,16 +24,27 @@ export class AuthenticationService {
     return this.user;
   }
 
-  signOut(): Promise<void> {
-    return this.afAuth.auth.signOut();
-  }
-
   createUser(user: any): Promise<firebase.auth.UserCredential> {
     return this.afAuth.auth.createUserWithEmailAndPassword(user.email, user.password);
   }
 
-  authWithEmail(user: any): Promise<firebase.auth.UserCredential> {
+  loginUser(user: any): Promise<firebase.auth.UserCredential> {
     return this.afAuth.auth.signInWithEmailAndPassword(user.email, user.password);
+  }
+
+  signOut(): Promise<void> {
+    if (isPlatformBrowser(this.platformId)) {
+      if (localStorage.getItem('User')) {
+        localStorage.removeItem('User');
+      }
+    }
+    return this.afAuth.auth.signOut();
+  }
+
+  saveCurrentUSer(user: {}) {
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.setItem('User', JSON.stringify(user));
+    }
   }
 
   authWithFacebook(): Promise<firebase.auth.UserCredential> {
@@ -46,14 +60,18 @@ export class AuthenticationService {
   }
 
   updateProfile = (user: any): Promise<void> =>
-  this.afAuth.auth.currentUser
+    this.afAuth.auth.currentUser
     ? this.afAuth.auth.currentUser.updateProfile({
       displayName: user.displayName
     })
     : Promise.resolve()
 
-  resetPassword(user: any): Promise<void> {
+  changePassword(user: any): Promise<void> {
     return this.afAuth.auth.sendPasswordResetEmail(user.email);
+  }
+
+  verifyEmail(): Promise<void> {
+    return this.afAuth.auth.currentUser.sendEmailVerification();
   }
 
 }
