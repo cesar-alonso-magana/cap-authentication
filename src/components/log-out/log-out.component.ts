@@ -1,7 +1,6 @@
-import { Component, OnInit, Inject, PLATFORM_ID} from '@angular/core';
+import { Component, OnInit, ViewEncapsulation} from '@angular/core';
 import { AuthenticationService } from '../../services/authentication.service';
 import { Router } from '@angular/router';
-import { isPlatformBrowser } from '@angular/common';
 
 @Component({
   selector: 'cap-log-out-firebase',
@@ -14,6 +13,8 @@ import { isPlatformBrowser } from '@angular/common';
     </div>
     `,
   styles: [``],
+  encapsulation: ViewEncapsulation.Emulated
+
 })
 
 export class logOutComponent implements OnInit {
@@ -21,20 +22,14 @@ export class logOutComponent implements OnInit {
   constructor(
     private authenticationService: AuthenticationService,
     private router: Router,
-    @Inject(PLATFORM_ID) private platformId
   ) {
-    this.authenticationService.signOut();
     this.logOutUser();
   }
 
-  ngOnInit() { }
+  ngOnInit() {}
 
   logOutUser() {
-    if (isPlatformBrowser(this.platformId)) {
-      if (localStorage.getItem('User')) {
-        localStorage.removeItem('User');
-      }
-    }
+    this.authenticationService.signOut();
     this.router.navigate(['/']);
   }
 
