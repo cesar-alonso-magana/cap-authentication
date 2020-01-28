@@ -1,7 +1,6 @@
 import { NgModule, ModuleWithProviders, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
-import { ConfigService } from './services/config.service';
 import { AuthenticationService } from './services/authentication.service';
 import { CommonModule } from "@angular/common";
 
@@ -28,10 +27,6 @@ import { AngularFireAuthModule } from '@angular/fire/auth';
     AngularFireAuthModule,
   ],
   exports: [
-    HttpClientModule,
-    ReactiveFormsModule,
-    FormsModule,
-    CommonModule,
     AuthLoginComponent,
     AuthRegisterComponent,
     AuthChangePasswordComponent,
