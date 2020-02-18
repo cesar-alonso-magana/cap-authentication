@@ -1,6 +1,6 @@
 {
   "name": "cap-authentication-forked",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Angular module to authenticate users in your application; CAP extension",
   "scripts": {
     "packagr": "ng-packagr -p ng-package.json"

@@ -17,29 +17,24 @@ export class AuthenticationService {
     @Inject(PLATFORM_ID) private platformId,
     private stateService: StateService
   ) {
-    const isUserLoggedIn = this.isUserLoggedIn();
-    console.log('isUserLoggedIn', isUserLoggedIn);
-  }
-
-  setStateIsLogged(state: boolean) {
-    // Set isLogged State to true
-    this.stateService.setState('isLogged', state);
+    if (isPlatformBrowser(this.platformId)) {
+       this.isUserLoggedIn();
+    }
   }
 
   saveCurrentUser(user: {}) {
     if (isPlatformBrowser(this.platformId)) {
       localStorage.setItem('User', JSON.stringify(user));
+      // Set isLogged State to true
+      this.stateService.setState('isLogged', true);
     }
   }
 
-  isUserLoggedIn(): boolean {
+  isUserLoggedIn(): boolean | void {
     if (isPlatformBrowser(this.platformId) && localStorage.getItem('User')) {
       let userStorage = JSON.parse(localStorage.getItem('User'));
       const helper = new JwtHelperService();
       if (!helper.isTokenExpired(userStorage.token)) {
-        
-        // Set isLogged State to true
-        this.setStateIsLogged(true);
         return true;
       } else {
         this.refreshToken(userStorage.refresh_token).subscribe((token: any) => {
@@ -52,9 +47,6 @@ export class AuthenticationService {
               token_id: token.id_token,
               id: userStorage.id
             });
-            
-            // Set isLogged State to true
-            this.setStateIsLogged(true);
             return true;
           }
         }, (error) => {
@@ -188,7 +180,7 @@ export class AuthenticationService {
         localStorage.removeItem('User');
         
         // Set isLogged State to false
-        this.setStateIsLogged(false);
+         this.stateService.setState('isLogged', false);
       }
     }
   }
